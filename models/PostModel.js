@@ -5,9 +5,6 @@ const schema = new mongoose.Schema({
     categoryId:{  
         type: 'string',
     },
-    userId:{  
-        type: 'string',
-    },
     hagtagId:{  
         type: 'string',
     },
@@ -15,13 +12,10 @@ const schema = new mongoose.Schema({
         type: 'string',
         required: true
     },
-    author: {
-        type: 'string',
-        // required: true,
-    },
     content: {
         type: 'string',
-        required: true
+        required: true,
+        trim: true
     },
     description: {
         type: 'string'
@@ -31,6 +25,10 @@ const schema = new mongoose.Schema({
     likeCount: {
         type: 'Number',
         default: 0
+    },
+    author: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
 }, {
     timestamps: true

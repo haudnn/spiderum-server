@@ -5,9 +5,10 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 export const register = async (req, res, next) => {
     try {
-        const newUser = req.body;
-        const user = new UserModel(newUser);
-        await user.save();
+        // const newUser = req.body;
+        // const user = new UserModel(newUser);
+        // await user.save({...req.body, isVerified:'true'});
+        const user = await UserModel.create({...req.body, isVerified:true})
         const token = jwt.sign({
             userId: user._id
         }, process.env.APP_SECRET)

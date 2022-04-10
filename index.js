@@ -14,6 +14,7 @@ app.use(cors())
 app.use('/api/v1/posts',posts)
 app.use('/api/v1/auth',auth )
 app.set("view engine", "pug");
+console.log(PORT)
 app.get('/', (req, res) => {
   res.render('index', { title: "Home" })
 })

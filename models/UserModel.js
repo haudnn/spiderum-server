@@ -17,6 +17,7 @@ const schema = new mongoose.Schema({
     },
     email:{  
         type: 'string',
+        trim:true,
     },
     displayName: {
         type: 'string',
@@ -41,10 +42,10 @@ const schema = new mongoose.Schema({
         type: 'Number',
         default: 0
     },
-    identification: {
-        type: 'string'
+    isVerified: {
+        type: Boolean,
+        default: false,
     },
-    isVerified : Boolean
 }, {
     timestamps: true
 })
@@ -57,6 +58,6 @@ schema.pre('save', function(next){
             user.password  = hash
             next()
         }
-    }) // document dc tao ra trong moogose
+    })
 })
 export const UserModel = mongoose.model('User', schema)
