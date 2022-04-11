@@ -12,8 +12,8 @@ const schema = new mongoose.Schema({
         type: 'string',
         unique:true,
         trim:true,
-        required:[true,'Mật khẩu là bắt buộc và phải chứa từ 6 đến 30 ký tự'],
-        minlength:[6, 'Mật khẩu  là bắt buộc và phải chứa từ 6 đến 30 ký tự']
+        required:[true,'Mật khẩu nên chứa từ 6 đến 100 ký tự'],
+        minlength:[6, 'Mật khẩu nên chứa từ 6 đến 100 ký tự']
     },
     email:{  
         type: 'string',

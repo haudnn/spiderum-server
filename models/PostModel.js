@@ -10,12 +10,14 @@ const schema = new mongoose.Schema({
     },
     title: {
         type: 'string',
-        required: true
+        trim: true,
+        required:[true,'Tiêu đề bài viết không được để trống và phải nhiều hơn 10 kí tự'],
+        minlength:[10, 'Tiêu đề bài viết không được để trống và phải nhiều hơn 10 kí tự']
     },
     content: {
         type: 'string',
-        required: true,
-        trim: true
+        trim: true,
+        minlength:[1, 'Có lỗi khi tạo bài viết']
     },
     description: {
         type: 'string'

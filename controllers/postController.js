@@ -3,7 +3,10 @@ import {
 } from "../models/PostModel.js";
 export const getPosts = async (req, res, next) => {
     try {
-        const posts = await PostModel.find().populate('author'); // lấy toàn bộ thông tin của user có id match
+        const posts = await PostModel.find().populate('author','userName').select('title content description createdAt slug') ; 
+        // populate('author') lấy toàn bộ thông tin của user có id match
+        // populate('author','userName') lấy username từ author 
+        // .select('-slug') // trừ field nào không muốn lấy
         res.status(200).json({
             status: 'OK',
             result: posts.length,
@@ -36,9 +39,7 @@ export const createPost = async (req, res, next) => {
             data:{post}
         })
     } catch (err) {
-        res.status(500).json({
-            error: err,
-        });
+       next(err)
     }
 };
 export const updatePost = async (req, res, next) => {
@@ -65,9 +66,7 @@ export const updatePost = async (req, res, next) => {
             data:{post}
         })
     } catch (err) {
-        res.status(500).json({
-            error: err,
-        });
+        next(err)
     }
 
 };
@@ -88,15 +87,13 @@ export const deletePost = async (req, res, next) => {
     //     });
     // }
     try {
-        const {postId} = req.params
+        const { postId } = req.params
         await PostModel.findByIdAndDelete(postId)
         res.status(200).json({
             status: 'OK',
             message:'Post has been delected'
         })
     } catch (err) {
-        res.status(500).json({
-            error: err,
-        });
+        next(err)
     }
 };

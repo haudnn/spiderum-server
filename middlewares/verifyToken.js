@@ -1,14 +1,15 @@
 import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv'
-dotenv.config()
+// import dotenv from 'dotenv'
+// dotenv.config()
 export const verifyToken = (req,res,next) => {
     const Authorization = req.header('authorization')
     if(!Authorization) {
-        return res.status(403).send("Chưa có token bạn êi !!!!");
+        const err  = new Error ('Chưa có token bạn êi !!!!')
+        err.statusCode = 401
+        return next(err)
     }
     // Get token
     const token = Authorization.replace("Bearer ","");
-    // console.log(token)
     // Verify token
     const {userId} = jwt.verify(token,process.env.APP_SECRET)
     // Assign req

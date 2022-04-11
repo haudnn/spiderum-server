@@ -20,16 +20,16 @@ export const register = async (req, res, next) => {
             }
         });
     } catch (err) {
-        res.status(500).json({
-            error: err,
-        });
+        next(err)
     }
 };
 export const login = async (req, res, next) => {
     try {
         const user = await UserModel.findOne({email: req.body.email})
         if(!user){
-            // email err
+            const err  = new Error ('Email is not correct')
+            err.statusCode = 400
+            return next(err)
         }
         if (bcrypt.compareSync(req.body.password, user.password)) {
             const token = jwt.sign({
@@ -43,7 +43,9 @@ export const login = async (req, res, next) => {
                 }
             });
         } else {
-
+            const err  = new Error ('Password is not correct')
+            err.statusCode = 400
+            return next(err)
         }
     } catch (err) {
         res.status(500).json({
@@ -52,13 +54,26 @@ export const login = async (req, res, next) => {
     }
 
 };
-export const getUser = async (req, res, next) => {
+export const getCurrentUser = async (req, res, next) => {
+    // try {
+    //     const users = await UserModel.find();
+    //     res.status(200).json(users);
+    // } catch (err) {
+    //     res.status(500).json({
+    //         error: err,
+    //     });
+    // }
     try {
-        const users = await UserModel.find();
-        res.status(200).json(users);
-    } catch (err) {
-        res.status(500).json({
-            error: err,
-        });
+        const data =  { user: null }
+        if (req.user) {
+            const user = await UserModel.findOne({ _id: req.user.userId });
+            data.user = { userName: user.userName }
+        }
+        res.status(200).json({
+            status: 'success',
+            data: data
+        })
+    }catch (error) {
+        res.json(error)
     }
 };
