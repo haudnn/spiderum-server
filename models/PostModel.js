@@ -14,11 +14,9 @@ const schema = new mongoose.Schema({
         required:[true,'Tiêu đề bài viết không được để trống và phải nhiều hơn 10 kí tự'],
         minlength:[10, 'Tiêu đề bài viết không được để trống và phải nhiều hơn 10 kí tự']
     },
-    content: {
-        type: 'string',
-        trim: true,
-        minlength:[1, 'Có lỗi khi tạo bài viết']
-    },
+    content: [
+        mongoose.Schema.Types.Mixed
+    ],
     description: {
         type: 'string'
     },

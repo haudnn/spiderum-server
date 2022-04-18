@@ -15,10 +15,6 @@ const schema = new mongoose.Schema({
         required:[true,'Mật khẩu nên chứa từ 6 đến 100 ký tự'],
         minlength:[6, 'Mật khẩu nên chứa từ 6 đến 100 ký tự']
     },
-    email:{  
-        type: 'string',
-        trim:true,
-    },
     displayName: {
         type: 'string',
     },
@@ -29,7 +25,7 @@ const schema = new mongoose.Schema({
         type: 'string',
     },
     mobile: {
-        type: 'Number'
+        type: 'string'
     },
     identification: {
         type: 'string'

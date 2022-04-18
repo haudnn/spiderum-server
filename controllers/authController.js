@@ -5,9 +5,6 @@ import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 export const register = async (req, res, next) => {
     try {
-        // const newUser = req.body;
-        // const user = new UserModel(newUser);
-        // await user.save({...req.body, isVerified:'true'});
         const user = await UserModel.create({...req.body, isVerified:true})
         const token = jwt.sign({
             userId: user._id
@@ -16,7 +13,8 @@ export const register = async (req, res, next) => {
             status: 'OK',
             data: {
                 token,
-                userName: user.userName
+                // userName: user.userName,
+                // displayName: user.displayName
             }
         });
     } catch (err) {
@@ -25,9 +23,9 @@ export const register = async (req, res, next) => {
 };
 export const login = async (req, res, next) => {
     try {
-        const user = await UserModel.findOne({email: req.body.email})
+        const user = await UserModel.findOne({userName: req.body.userName})
         if(!user){
-            const err  = new Error ('Email is not correct')
+            const err  = new Error ('Sai tên đăng nhập hoặc mật khẩu')
             err.statusCode = 400
             return next(err)
         }
@@ -39,7 +37,9 @@ export const login = async (req, res, next) => {
                 status: 'OK',
                 data: {
                     token,
-                    userName: user.userName
+                    userName: user.userName,
+                    displayName: user.displayName,
+                    mobile:user.mobile,
                 }
             });
         } else {
@@ -52,22 +52,22 @@ export const login = async (req, res, next) => {
             error: err,
         });
     }
-
 };
 export const getCurrentUser = async (req, res, next) => {
-    // try {
-    //     const users = await UserModel.find();
-    //     res.status(200).json(users);
-    // } catch (err) {
-    //     res.status(500).json({
-    //         error: err,
-    //     });
-    // }
     try {
         const data =  { user: null }
         if (req.user) {
             const user = await UserModel.findOne({ _id: req.user.userId });
-            data.user = { userName: user.userName }
+            data.user = {
+                userName: user.userName,
+                displayName: user.displayName,
+                mobile:user.mobile,
+                followers: user.followers,
+                following: user.following,
+                intro: user.intro,
+                avatar: user.avatar,
+                isVerified: user.isVerified,
+            }
         }
         res.status(200).json({
             status: 'success',

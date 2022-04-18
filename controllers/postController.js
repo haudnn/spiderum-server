@@ -1,7 +1,8 @@
 import {
     PostModel
 } from "../models/PostModel.js";
-export const getPosts = async (req, res, next) => {
+import { v2 as cloudinary } from 'cloudinary'
+export const getAllPosts = async (req, res, next) => {
     try {
         const posts = await PostModel.find().populate('author','userName').select('title content description createdAt slug') ; 
         // populate('author') lấy toàn bộ thông tin của user có id match
@@ -44,6 +45,7 @@ export const createPost = async (req, res, next) => {
 };
 export const updatePost = async (req, res, next) => {
     // try {
+        
     //     const updatePost = req.body;
     //     const post = await PostModel.findOneAndUpdate({
     //             _id: updatePost._id,
@@ -97,3 +99,43 @@ export const deletePost = async (req, res, next) => {
         next(err)
     }
 };
+export const uploadImage = async (req, res, next) => {
+    try {
+        const fileStr = req.file;
+        const uploadResponse = await cloudinary.uploader.upload(fileStr.path, {
+            folder:"postimg"
+        });
+        res.status(200).json({
+            "success" : "1",
+            "file": {
+                "url" : uploadResponse.url, 
+            }
+        })
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ err: 'Something went wrong' });
+    }
+}
+export const getPost = async (req, res, next) => {
+    try {
+        // const data =  { post: null }
+        const post = await PostModel.findOne({slug: req.params.slug });
+        // data.post  = {
+        //     userName: user.userName,
+        //     displayName: user.displayName,
+        //     mobile:user.mobile,
+        //     followers: user.followers,
+        //     following: user.following,
+        //     intro: user.intro,
+        //     avatar: user.avatar,
+        //     isVerified: user.isVerified,
+        // }
+        res.status(200).json({
+            status: 'success',
+            post: post
+        })
+    }catch (error) {
+        res.json(error)
+    }
+};
+  

@@ -5,13 +5,13 @@ export const errorHandler = (err,req,res,next) => {
     if(err.code === 11000){
         err.statusCode = 400;
         for( let p in err.keyValue){
-            err.message = `${p} have to be unique`
+            err.message = `Tên tài khoản đã tồn tại`
         }
     }   
     // Object ID not found 
     if(err.kind === 'ObjectId'){
         err.statusCode = 404
-        err.message = `The ${req.originalUrl} is not found because of wrong ID`
+        err.message = ` ${req.originalUrl} không thể tìm thấy vì sai ID`
     } 
 
     // Validation
