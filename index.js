@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors'
 import posts from './routers/posts.js'
 import auth from './routers/auth.js'
+import category from './routers/category.js'
 import { connect } from './config/db.js'
 import {errorHandler} from './middlewares/errorHandler.js'
 import multer from 'multer'
@@ -27,6 +28,7 @@ app.use(cors())
 
 app.use('/api/v1/posts',posts)
 app.use('/api/v1/auth',auth )
+app.use('/api/v1/category', category)
 app.all('*',(req, res, next) => {
   const err = new Error ('The route can not be found')
   err.statusCode = 404
