@@ -10,6 +10,7 @@ import {errorHandler} from './middlewares/errorHandler.js'
 import multer from 'multer'
 import { v2 as cloudinary } from 'cloudinary'
 dotenv.config()
+
 const app = express();
 const PORT = process.env.APP_PORT;
 cloudinary.config({ 
@@ -29,13 +30,14 @@ app.use(cors())
 app.use('/api/v1/posts',posts)
 app.use('/api/v1/auth',auth )
 app.use('/api/v1/category', category)
+app.set("view engine", "pug");
+app.get('/', (req, res) => {
+  res.render('index', { title: "Home" })
+})
+
 app.all('*',(req, res, next) => {
   const err = new Error ('The route can not be found')
   err.statusCode = 404
   next(err)
 })
 app.use(errorHandler)
-app.set("view engine", "pug");
-app.get('/', (req, res) => {
-  res.render('index', { title: "Home" })
-})

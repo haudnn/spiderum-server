@@ -64,14 +64,15 @@ export const deleteCategory = async (req, res, next) => {
 export const uploadImage = async (req, res, next) => {
     try {
         const fileStr = req.file;
+        const {cateId} = req.params
         const uploadResponse = await cloudinary.uploader.upload(fileStr.path, {
-            folder:"postimg"
+            folder:"category"
         });
+        const img = uploadResponse.url
+        const category = await CategoryModel.findByIdAndUpdate(cateId, {...req.body, "attachment": img } , {new: true, runValidator:true})
         res.status(200).json({
-            "success" : "1",
-            "file": {
-                "url" : uploadResponse.url, 
-            }
+            status: 'OK',
+            data: category
         })
     } catch (err) {
         console.error(err);

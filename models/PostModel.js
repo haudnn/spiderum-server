@@ -22,12 +22,17 @@ const schema = new mongoose.Schema({
         type: 'Number',
         default: 0
     },
+    attachment: {
+        type: String,
+        default: 'https://s3-ap-southeast-1.amazonaws.com/images.spiderum.com/sp-thumbnails/defaultthumbnail.png'
+    },
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
     category:{
-        type:'string'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
     }
 }, {
     timestamps: true

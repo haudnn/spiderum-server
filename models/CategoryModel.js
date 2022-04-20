@@ -34,6 +34,8 @@ const schema = new mongoose.Schema({
         type: 'Number',
         default: 0
     },
+    follow:Boolean,
+    attachment:String,
     slug: {
         type: String,
         slug: 'name',

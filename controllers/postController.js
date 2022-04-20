@@ -4,13 +4,36 @@ import {
 import { v2 as cloudinary } from 'cloudinary'
 export const getAllPosts = async (req, res, next) => {
     try {
-        const posts = await PostModel.find().populate('author','userName').select('title content description createdAt slug') ; 
+        const posts = await PostModel.find()
+        .populate('author','userName')
+        .populate('category','name')
+        .select('title content description createdAt slug category attachment') ; 
         // populate('author') lấy toàn bộ thông tin của user có id match
         // populate('author','userName') lấy username từ author 
         // .select('-slug') // trừ field nào không muốn lấy
         res.status(200).json({
             status: 'OK',
-            result: posts.length,
+            data: {
+                posts
+            }
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err,
+        });
+    }
+};
+export const getPostsByCategory = async (req, res, next) => {
+    const {cateId} = req.params
+    try {
+        const posts = await PostModel.find({
+            category: cateId
+        })
+        .populate('author','userName')
+        .populate('category','name')
+        .select('title description createdAt slug category attachment') ; 
+        res.status(200).json({
+            status: 'OK',
             data: {
                 posts
             }
@@ -22,19 +45,17 @@ export const getAllPosts = async (req, res, next) => {
     }
 };
 export const createPost = async (req, res, next) => {
-    // try {
-    //     const newPost = req.body;
-    //     const post = new PostModel(newPost);
-    //     await post.save();
-    //     res.status(200).json(post);
-    // } catch (err) {
-    //     res.status(500).json({
-    //         error: err,
-    //     });
-    // }
     try {
         const {userId} = req.user
-        const post = await PostModel.create({...req.body, author: userId})
+        const att = req.body.content.blocks.filter((url) =>{
+            if(url.type === "image") {
+              return url.data.file
+            }
+          })
+          const url = att.map((e,i) => { 
+              return e.data.file.url
+          })
+        const post = await PostModel.create({...req.body, author: userId ,attachment:url.toString()})
         res.status(200).json({
             status: 'OK',
             data:{post}
@@ -44,22 +65,6 @@ export const createPost = async (req, res, next) => {
     }
 };
 export const updatePost = async (req, res, next) => {
-    // try {
-        
-    //     const updatePost = req.body;
-    //     const post = await PostModel.findOneAndUpdate({
-    //             _id: updatePost._id,
-    //         },
-    //         updatePost, {
-    //             new: true
-    //         }
-    //     );
-    //     res.status(200).json(post);
-    // } catch (err) {
-    //     res.status(500).json({
-    //         error: err,
-    //     });
-    // }
     try {
         const {postId} = req.params
         const post = await PostModel.findByIdAndUpdate(postId, {...req.body} , {new: true, runValidator:true})
@@ -73,21 +78,6 @@ export const updatePost = async (req, res, next) => {
 
 };
 export const deletePost = async (req, res, next) => {
-    // try {
-    //     const updatePost = req.body;
-    //     const post = await PostModel.findOneAndUpdate({
-    //             _id: updatePost._id,
-    //         },
-    //         updatePost, {
-    //             new: true
-    //         }
-    //     );
-    //     res.status(200).json(post);
-    // } catch (err) {
-    //     res.status(500).json({
-    //         error: err,
-    //     });
-    // }
     try {
         const { postId } = req.params
         await PostModel.findByIdAndDelete(postId)
@@ -118,18 +108,9 @@ export const uploadImage = async (req, res, next) => {
 }
 export const getPost = async (req, res, next) => {
     try {
-        // const data =  { post: null }
-        const post = await PostModel.findOne({slug: req.params.slug });
-        // data.post  = {
-        //     userName: user.userName,
-        //     displayName: user.displayName,
-        //     mobile:user.mobile,
-        //     followers: user.followers,
-        //     following: user.following,
-        //     intro: user.intro,
-        //     avatar: user.avatar,
-        //     isVerified: user.isVerified,
-        // }
+        const post = await PostModel.findOne({slug: req.params.slug })
+        .populate('author','userName')
+        .populate('category')
         res.status(200).json({
             status: 'success',
             post: post
