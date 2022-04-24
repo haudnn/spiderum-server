@@ -21,6 +21,7 @@ export const register = async (req, res, next) => {
         next(err)
     }
 };
+
 export const login = async (req, res, next) => {
     try {
         const user = await UserModel.findOne({userName: req.body.userName})
@@ -57,17 +58,8 @@ export const getCurrentUser = async (req, res, next) => {
     try {
         const data =  { user: null }
         if (req.user) {
-            const user = await UserModel.findOne({ _id: req.user.userId });
-            data.user = {
-                userName: user.userName,
-                displayName: user.displayName,
-                mobile:user.mobile,
-                followers: user.followers,
-                following: user.following,
-                intro: user.intro,
-                avatar: user.avatar,
-                isVerified: user.isVerified,
-            }
+            const user = await UserModel.findOne({ _id: req.user.userId }).populate('category');
+            data.user = user
         }
         res.status(200).json({
             status: 'success',
@@ -75,5 +67,41 @@ export const getCurrentUser = async (req, res, next) => {
         })
     }catch (error) {
         res.json(error)
+    }
+};
+export const createCategoryUser = async (req, res, next) => {
+    const {userId} = req.user
+    try {
+        const data = await UserModel.findOneAndUpdate({ _id: userId},{
+            $push: {
+                category: {                   
+                    $each: req.body,
+                }
+            }
+         } , {new:true} )
+        res.status(200).json({
+            status: 'OK',
+            data:data,
+        })
+    } catch (err) {
+        next(err)
+    }
+};
+export const deleteCategoryUser = async (req, res, next) => {
+    const {userId} = req.user
+    try {
+        const data = await UserModel.findOneAndUpdate({ _id: userId},{
+            $pull: {
+                category :{
+                    $in :req.body
+                }
+            }
+         } , {new:true} )
+        res.status(200).json({
+            status: 'OK',
+            data:data,
+        })
+    } catch (err) {
+        next(err)
     }
 };

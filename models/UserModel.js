@@ -42,6 +42,14 @@ const schema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    category : [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Category',
+            default:[],
+        }
+    ]     
+    
 }, {
     timestamps: true
 })
