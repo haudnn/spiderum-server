@@ -70,7 +70,7 @@ export const updatePost = async (req, res, next) => {
         const post = await PostModel.findByIdAndUpdate(postId, {...req.body} , {new: true, runValidator:true})
         res.status(200).json({
             status: 'OK',
-            data:{post}
+            data:post
         })
     } catch (err) {
         next(err)

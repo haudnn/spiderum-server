@@ -38,6 +38,7 @@ export const login = async (req, res, next) => {
                 status: 'OK',
                 data: {
                     token,
+                    _id: user._id,
                     userName: user.userName,
                     displayName: user.displayName,
                     mobile:user.mobile,
