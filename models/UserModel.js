@@ -15,8 +15,14 @@ const schema = new mongoose.Schema({
         required:[true,'Mật khẩu nên chứa từ 6 đến 100 ký tự'],
         minlength:[6, 'Mật khẩu nên chứa từ 6 đến 100 ký tự']
     },
+    mail: {
+        type: 'string',
+    },
     displayName: {
         type: 'string',
+    },
+    gender : {
+        type:'string'
     },
     intro: {
         type: 'string',
@@ -24,10 +30,16 @@ const schema = new mongoose.Schema({
     avatar: {
         type: 'string',
     },
+    cover: {
+        type: 'string',
+    },
     mobile: {
         type: 'string'
     },
     identification: {
+        type: 'string'
+    },
+    address: {
         type: 'string'
     },
     followers: {
@@ -41,6 +53,15 @@ const schema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false,
+    },
+    dateOfBirth : {
+        type: 'string'
+    },
+    monthOfBirth : {
+        type: 'string'
+    },
+    yearOfBirth : {
+        type: 'string'
     },
     category : [
         {

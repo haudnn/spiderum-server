@@ -26,7 +26,6 @@ app.use(bodyParser.json({extended: true, limit: '30mb'}))
 app.use(bodyParser.urlencoded({ extended: true, limit:'30mb' }))
 
 app.use(cors())
-
 app.use('/api/v1/posts',posts)
 app.use('/api/v1/auth',auth )
 app.use('/api/v1/category', category)

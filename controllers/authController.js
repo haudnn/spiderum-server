@@ -106,3 +106,17 @@ export const deleteCategoryUser = async (req, res, next) => {
         next(err)
     }
 };
+
+export const updateUser = async (req, res, next) => {
+    try {
+        const {userId} = req.user
+        const user = await UserModel.findByIdAndUpdate(userId, {...req.body} , {new: true, runValidator:true})
+        res.status(200).json({
+            status: 'OK',
+            data:user
+        })
+    } catch (err) {
+        next(err)
+    }
+
+};
