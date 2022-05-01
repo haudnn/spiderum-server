@@ -10,7 +10,6 @@ const schema = new mongoose.Schema({
     },
     password:{  
         type: 'string',
-        unique:true,
         trim:true,
         required:[true,'Mật khẩu nên chứa từ 6 đến 100 ký tự'],
         minlength:[6, 'Mật khẩu nên chứa từ 6 đến 100 ký tự']

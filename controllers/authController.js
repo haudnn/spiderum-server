@@ -45,7 +45,7 @@ export const login = async (req, res, next) => {
                 }
             });
         } else {
-            const err  = new Error ('Password is not correct')
+            const err  = new Error ('Mật khẩu bạn vừa nhập không chính xác')
             err.statusCode = 400
             return next(err)
         }
@@ -119,4 +119,27 @@ export const updateUser = async (req, res, next) => {
         next(err)
     }
 
+};
+export const updatePassword = async (req, res, next) => {
+    try {
+        const {userId} = req.user
+        const getUser = await UserModel.findOne({_id:userId})
+        const result  = bcrypt.compareSync(req.body.oldPassword, getUser.password)
+        if (result) {
+            req.body.password = await bcrypt.hash( req.body.password,10)   
+            const user = await UserModel.findByIdAndUpdate(userId, {...req.body,password:req.body.password } , {new: true, runValidator:true})
+            res.status(200).json({
+                status: 'OK',
+                data :  "Cập nhật mật khẩu thành công"
+            });      
+        } else {
+            const err  = new Error ('Mật khẩu cũ không chính xác')
+            err.statusCode = 400
+            return next(err)
+        }
+    } catch (err) {
+        res.status(500).json({
+            error: err,
+        });
+    }
 };
