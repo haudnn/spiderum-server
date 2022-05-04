@@ -143,3 +143,44 @@ export const updatePassword = async (req, res, next) => {
         });
     }
 };
+export const updateUserEmail  = async (req, res, next) => {
+    try {
+        const {userId} = req.user
+        const getUser = await UserModel.findOne({_id:userId})
+        const result  = bcrypt.compareSync(req.body.password, getUser.password)
+        if (result) { 
+            await UserModel.findByIdAndUpdate(userId, {mail:req.body.mail } , {new: true, runValidator:true})
+            res.status(200).json({
+                status: 'OK',
+                data :  "Cập nhật email thành công"
+            });      
+        } else {
+            const err  = new Error ('Mật khẩu không chính xác')
+            err.statusCode = 400
+            return next(err)
+        }
+    } catch (err) {
+        res.status(500).json({
+            error: err,
+        });
+    }
+};
+
+export const getUser = async (req, res, next) => {
+    const {username} = req.params
+    const data =  { user: null }
+    try {
+        const user = await UserModel.findOne({
+            userName: username
+        })
+        data.user = user
+        res.status(200).json({
+            status: 'OK',
+            data: data
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err,
+        });
+    }
+};

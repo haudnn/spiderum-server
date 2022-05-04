@@ -73,6 +73,7 @@ const schema = new mongoose.Schema({
 }, {
     timestamps: true
 })
+schema.index({displayName: 'text' , userName:'text'});
 schema.pre('save', function(next){
     let user = this;
     bcrypt.hash(user.password,10,(err,hash) =>{

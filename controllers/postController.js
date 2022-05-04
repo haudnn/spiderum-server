@@ -1,16 +1,16 @@
 import {
-    PostModel
+    PostModel,
 } from "../models/PostModel.js";
+import {
+    UserModel
+} from "../models/UserModel.js";
 import { v2 as cloudinary } from 'cloudinary'
 export const getAllPosts = async (req, res, next) => {
     try {
         const posts = await PostModel.find()
-        .populate('author','userName')
-        .populate('category','name')
-        .select('title content description createdAt slug category attachment') ; 
-        // populate('author') lấy toàn bộ thông tin của user có id match
-        // populate('author','userName') lấy username từ author 
-        // .select('-slug') // trừ field nào không muốn lấy
+        .populate('author','userName avatar displayName')
+        .populate('category','name slug')
+        .select('title content description createdAt slug category attachment ') ; 
         res.status(200).json({
             status: 'OK',
             data: {
@@ -29,7 +29,32 @@ export const getPostsByCategory = async (req, res, next) => {
         const posts = await PostModel.find({
             category: cateId
         })
-        .populate('author','userName')
+        .populate('author','userName avatar displayName' )
+        .populate('category','name slug')
+        .select('title description createdAt slug category attachment ') ; 
+        res.status(200).json({
+            status: 'OK',
+            data: {
+                posts
+            }
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err,
+        });
+    }
+};
+export const getPostsByUserName = async (req, res, next) => {
+    const {username} = req.params
+    const user = await UserModel.find({
+        userName: username
+    })
+   const userId= user[0]._id.toString()
+    try {
+        const posts = await PostModel.find({
+            author: userId
+        })
+        .populate('author','userName avatar')
         .populate('category','name')
         .select('title description createdAt slug category attachment') ; 
         res.status(200).json({
@@ -44,30 +69,49 @@ export const getPostsByCategory = async (req, res, next) => {
         });
     }
 };
+
 export const createPost = async (req, res, next) => {
     try {
         const {userId} = req.user
+        if(req.body.title.length < 10 ){
+            res.status(500).json({
+                err:"Tiêu đề bài viết không được để trống và phải nhiều hơn 10 kí tự"
+            })
+        }
         const att = req.body.content.blocks.filter((url) =>{
             if(url.type === "image") {
               return url.data.file
             }
           })
-          const url = att.map((e,i) => { 
+          const url = att.map((e) => { 
               return e.data.file.url
           })
         const post = await PostModel.create({...req.body, author: userId ,attachment:url.toString()})
         res.status(200).json({
             status: 'OK',
-            data:{post}
+            data:{
+                slug:post.slug,
+                status: 'Bài viết được tạo thành công',
+            }
         })
     } catch (err) {
-       next(err)
+        res.status(500).json({
+            err:"Có lỗi khi tạo bài viết"
+        })
     }
 };
 export const updatePost = async (req, res, next) => {
     try {
         const {postId} = req.params
-        const post = await PostModel.findByIdAndUpdate(postId, {...req.body} , {new: true, runValidator:true})
+        const att = req.body.content.blocks.filter((url) =>{
+            if(url.type === "image") {
+              return url.data.file
+            }
+          })
+          const url = att.map((e) => { 
+              return e.data.file.url
+          })
+        const post = await PostModel.findByIdAndUpdate(postId, {...req.body,attachment:url.toString()} , {new: true, runValidator:true})
         res.status(200).json({
             status: 'OK',
             data:post
@@ -83,7 +127,7 @@ export const deletePost = async (req, res, next) => {
         await PostModel.findByIdAndDelete(postId)
         res.status(200).json({
             status: 'OK',
-            message:'Post has been delected'
+            message:'Bài viết đã được xóa thành công'
         })
     } catch (err) {
         next(err)
@@ -109,7 +153,7 @@ export const uploadImage = async (req, res, next) => {
 export const getPost = async (req, res, next) => {
     try {
         const post = await PostModel.findOne({slug: req.params.slug })
-        .populate('author','userName')
+        .populate('author','userName displayName avatar')
         .populate('category')
         res.status(200).json({
             status: 'success',
