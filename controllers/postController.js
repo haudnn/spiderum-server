@@ -78,6 +78,11 @@ export const createPost = async (req, res, next) => {
                 err:"Tiêu đề bài viết không được để trống và phải nhiều hơn 10 kí tự"
             })
         }
+        if(req.body.content.blocks.length === 0 ){
+            res.status(500).json({
+                err:"Có lỗi khi tạo bài viết"
+            })
+        }
         const att = req.body.content.blocks.filter((url) =>{
             if(url.type === "image") {
               return url.data.file
@@ -124,6 +129,7 @@ export const updatePost = async (req, res, next) => {
 export const deletePost = async (req, res, next) => {
     try {
         const { postId } = req.params
+
         await PostModel.findByIdAndDelete(postId)
         res.status(200).json({
             status: 'OK',

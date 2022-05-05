@@ -59,7 +59,8 @@ export const getCurrentUser = async (req, res, next) => {
     try {
         const data =  { user: null }
         if (req.user) {
-            const user = await UserModel.findOne({ _id: req.user.userId }).populate('category');
+            const user = await UserModel.findOne({ _id: req.user.userId })
+            .populate('category','slug attachment name _id ');
             data.user = user
         }
         res.status(200).json({
@@ -74,7 +75,7 @@ export const createCategoryUser = async (req, res, next) => {
     const {userId} = req.user
     try {
         const data = await UserModel.findOneAndUpdate({ _id: userId},{
-            $push: {
+            $push: {    
                 category: {                   
                     $each: req.body,
                 }
@@ -163,6 +164,54 @@ export const updateUserEmail  = async (req, res, next) => {
         res.status(500).json({
             error: err,
         });
+    }
+};
+export const updateFollower = async (req, res, next) => {
+    const {userId} = req.user // id current user when click flow
+    const targetUser = req.body.toString()
+    await UserModel.findOneAndUpdate({ _id: targetUser},{
+        $push: {    
+            followers: userId
+        }
+     } , {new:true} )
+    try {
+        const data = await UserModel.findOneAndUpdate({ _id: userId},{
+            $push: {    
+                following: req.body
+            }
+         } , {new:true} )
+        res.status(200).json({
+            status: 'OK',
+            data:data,
+        })
+    } catch (err) {
+        next(err)
+    }
+};
+export const updateUnFollower = async (req, res, next) => {
+    const {userId} = req.user // id current user when click flow
+    const targetUser = req.body.toString()
+    await UserModel.findOneAndUpdate({ _id: targetUser},{
+        $pull: {    
+            followers:{
+                $in :userId
+            } 
+        }
+     } , {new:true} )
+    try {
+        const data = await UserModel.findOneAndUpdate({ _id: userId},{
+            $pull: {    
+                following: {
+                    $in :req.body
+                }
+            }
+         } , {new:true} )
+        res.status(200).json({
+            status: 'OK',
+            data:data,
+        })
+    } catch (err) {
+        next(err)
     }
 };
 

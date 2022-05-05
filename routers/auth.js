@@ -3,12 +3,14 @@ import {
     register,
     login,
     getCurrentUser,
+    getUser,
     createCategoryUser,
     deleteCategoryUser,
-    updatePassword,
     updateUser,
-    getUser,
-    updateUserEmail
+    updateUserEmail,
+    updatePassword,
+    updateFollower,
+    updateUnFollower
 } from '../controllers/authController.js'
 import {
     checkCurrentUser
@@ -21,6 +23,8 @@ router.post('/register', register)
 router.post('/login', login)
 router.put('/update/', verifyToken, updateUser)
 router.put('/update/email', verifyToken, updateUserEmail)
+router.put('/update/follower/',verifyToken, updateFollower)
+router.put('/update/unfollower/',verifyToken, updateUnFollower)
 router.put('/password/', verifyToken, updatePassword)
 router.put('/create/category/', verifyToken, createCategoryUser)
 router.put('/delete/category/', verifyToken, deleteCategoryUser)
