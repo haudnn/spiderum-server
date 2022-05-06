@@ -8,6 +8,12 @@ const schema = new mongoose.Schema({
         required:[true,'Tên tài khoản là bắt buộc và phải chứa từ 6 đến 30 ký tự'],
         minlength:[6, 'Tên tài khoản là bắt buộc và phải chứa từ 6 đến 30 ký tự']
     },
+    // socialIdFacebook:{
+    //     type:'string',
+    // },
+    authID:{
+        type:'string',
+    },
     password:{  
         type: 'string',
         trim:true,

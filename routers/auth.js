@@ -10,7 +10,8 @@ import {
     updateUserEmail,
     updatePassword,
     updateFollower,
-    updateUnFollower
+    updateUnFollower, 
+    authFacebook,
 } from '../controllers/authController.js'
 import {
     checkCurrentUser
@@ -20,6 +21,7 @@ import {
 } from '../middlewares/verifyToken.js';
 const router = express.Router()
 router.post('/register', register)
+router.post('/facebook/', authFacebook)
 router.post('/login', login)
 router.put('/update/', verifyToken, updateUser)
 router.put('/update/email', verifyToken, updateUserEmail)

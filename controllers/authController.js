@@ -4,6 +4,7 @@ import {
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 export const register = async (req, res, next) => {
+    // xác thực có token auth chưa cả login và register
     try {
         const user = await UserModel.create({...req.body, isVerified:true})
         const token = jwt.sign({
@@ -13,8 +14,6 @@ export const register = async (req, res, next) => {
             status: 'OK',
             data: {
                 token,
-                // userName: user.userName,
-                // displayName: user.displayName
             }
         });
     } catch (err) {
@@ -29,6 +28,21 @@ export const login = async (req, res, next) => {
             const err  = new Error ('Sai tên đăng nhập hoặc mật khẩu')
             err.statusCode = 400
             return next(err)
+        }
+        if(req.body.password === user.password) {
+            const token = jwt.sign({
+                userId: user._id
+            }, process.env.APP_SECRET)
+            res.status(200).json({
+                status: 'OK',
+                data: {
+                    token,
+                    _id: user._id,
+                    userName: user.userName,
+                    displayName: user.displayName,
+                    mobile:user.mobile,
+                }
+            });
         }
         if (bcrypt.compareSync(req.body.password, user.password)) {
             const token = jwt.sign({
@@ -233,3 +247,31 @@ export const getUser = async (req, res, next) => {
         });
     }
 };
+export const authFacebook = async (req, res, next) => {
+    try {    
+        const user  = await UserModel.find({
+            socialIdFacebook: req.body.uid
+        })
+        if(user.length !== 0 ){
+            const findUser = await UserModel.findOne({socialIdFacebook: req.body.uid})
+            res.status(200).json({
+                status: 'OK',
+                data: {
+                    _id: findUser._id,
+                    userName: findUser.userName,
+                    password: findUser.password
+                }
+            });
+        }
+        if(user.length === 0 ){
+            res.status(200).json({
+                status: 'OK',
+                data: null,
+            });
+        }
+    }catch (error) {
+        res.status(500).json({
+            error: error,
+        });
+    }
+};   
