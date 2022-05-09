@@ -169,4 +169,27 @@ export const getPost = async (req, res, next) => {
         res.json(error)
     }
 };
-  
+export const votePost = async (req, res, next) => {
+    try {
+        const postId = req.body.postId
+        const prevPost =  await PostModel.findOne({_id : postId})
+        if(req.body.action  === "2" ){
+            const post = await PostModel.findByIdAndUpdate(postId,{ point: prevPost.point + 1 },{new: true, runValidator:true})
+            res.status(200).json({
+                status: 'OK',
+                point: post.point
+            })
+        }
+        //  1 unvote
+        else if (req.body.action === "1" ){
+            const post = await PostModel.findByIdAndUpdate(postId,{ point: prevPost.point -1  },{new: true, runValidator:true})
+            res.status(200).json({
+                status: 'OK',
+                point: post.point
+            })
+        }
+
+    } catch (err) {
+        next(err)
+    }
+};

@@ -12,16 +12,23 @@ import {
     updateFollower,
     updateUnFollower, 
     authFacebook,
+    authMail,
+    confirmEmail
 } from '../controllers/authController.js'
 import {
     checkCurrentUser
 } from '../middlewares/checkCurrentUser.js';
 import {
-    verifyToken
+    verifyToken,
 } from '../middlewares/verifyToken.js';
+import {
+    verifyTokenRegister
+} from '../middlewares/verifyTokenRegister.js'
 const router = express.Router()
-router.post('/register', register)
+router.post('/register',  verifyTokenRegister,register)
 router.post('/facebook/', authFacebook)
+router.post('/mail/' ,authMail)
+router.post('/mail/confirm/:id' , confirmEmail)
 router.post('/login', login)
 router.put('/update/', verifyToken, updateUser)
 router.put('/update/email', verifyToken, updateUserEmail)

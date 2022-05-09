@@ -8,10 +8,10 @@ const schema = new mongoose.Schema({
         required:[true,'Tên tài khoản là bắt buộc và phải chứa từ 6 đến 30 ký tự'],
         minlength:[6, 'Tên tài khoản là bắt buộc và phải chứa từ 6 đến 30 ký tự']
     },
-    // socialIdFacebook:{
-    //     type:'string',
-    // },
-    authID:{
+    socialIdFacebook:{
+        type:'string',
+    },
+    socialIdFacebook:{
         type:'string',
     },
     password:{  
@@ -63,6 +63,10 @@ const schema = new mongoose.Schema({
         }
     ],   
     isVerified: {
+        type: Boolean,
+        default: false,
+    },
+    isConfirmed: {
         type: Boolean,
         default: false,
     },

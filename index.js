@@ -11,7 +11,6 @@ import {errorHandler} from './middlewares/errorHandler.js'
 import multer from 'multer'
 import { v2 as cloudinary } from 'cloudinary'
 dotenv.config()
-
 const app = express();
 const PORT = process.env.APP_PORT;
 cloudinary.config({ 
