@@ -23,10 +23,13 @@ var schema = new mongoose.Schema({
         type: 'string'
     },
     slug: { type: String, slug: 'title', unique: true },
-    likeCount: {
-        type: 'Number',
-        default: 0
-    },
+    voteCount: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            default:[],
+        }
+    ],   
     attachment: String,
     author: {
         type: mongoose.Schema.Types.ObjectId,

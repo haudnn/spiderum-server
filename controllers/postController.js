@@ -91,7 +91,7 @@ export const createPost = async (req, res, next) => {
           const url = att.map((e) => { 
               return e.data.file.url
           })
-        const post = await PostModel.create({...req.body, author: userId ,attachment:url.toString()})
+        const post = await PostModel.create({...req.body, author: userId,voteCount:userId,attachment:url.toString()})
         res.status(200).json({
             status: 'OK',
             data:{
@@ -159,7 +159,7 @@ export const uploadImage = async (req, res, next) => {
 export const getPost = async (req, res, next) => {
     try {
         const post = await PostModel.findOne({slug: req.params.slug })
-        .populate('author','userName displayName avatar')
+        .populate('author','userName displayName avatar intro')
         .populate('category')
         res.status(200).json({
             status: 'success',
@@ -169,23 +169,66 @@ export const getPost = async (req, res, next) => {
         res.json(error)
     }
 };
+// export const votePost = async (req, res, next) => {
+//     try {
+//         const postId = req.body.postId
+//         const prevPost =  await PostModel.findOne({_id : postId})
+//         if(req.body.action  === "2" ){
+//             const post = await PostModel.findByIdAndUpdate(postId,{ point: prevPost.point + 1 },{new: true, runValidator:true})
+//             res.status(200).json({
+//                 status: 'OK',
+//                 point: post.point
+//             })
+//         }
+//         //  1 unvote
+//         else if (req.body.action === "1" ){
+//             const post = await PostModel.findByIdAndUpdate(postId,{ point: prevPost.point -1  },{new: true, runValidator:true})
+//             res.status(200).json({
+//                 status: 'OK',
+//                 point: post.point
+//             })
+//         }
+
+//     } catch (err) {
+//         next(err)
+//     }
+// };
 export const votePost = async (req, res, next) => {
+    console.log(req.body.postId)
     try {
-        const postId = req.body.postId
-        const prevPost =  await PostModel.findOne({_id : postId})
-        if(req.body.action  === "2" ){
-            const post = await PostModel.findByIdAndUpdate(postId,{ point: prevPost.point + 1 },{new: true, runValidator:true})
+        const {userId} = req.user
+        const find =  await PostModel.find({
+            _id : { $in: req.body.postId },
+            voteCount : { $in: userId }
+        })
+        console.log(find)
+        if(find.length === 0){
+            const data = await PostModel.findOneAndUpdate({_id:req.body.postId
+            }, {
+                $push: {
+                    voteCount:userId
+                }
+            }, {
+                new: true
+            })
             res.status(200).json({
-                status: 'OK',
-                point: post.point
+                status: '1',
+                data: data,
             })
         }
-        //  1 unvote
-        else if (req.body.action === "1" ){
-            const post = await PostModel.findByIdAndUpdate(postId,{ point: prevPost.point -1  },{new: true, runValidator:true})
+        else if (find.length !== 0){
+            const data = await PostModel.findOneAndUpdate({
+                _id:req.body.postId
+            }, {
+                $pull: {
+                    voteCount: userId
+                }
+            }, {
+                new: true
+            })
             res.status(200).json({
                 status: 'OK',
-                point: post.point
+                data: data,
             })
         }
 
@@ -193,3 +236,4 @@ export const votePost = async (req, res, next) => {
         next(err)
     }
 };
+
