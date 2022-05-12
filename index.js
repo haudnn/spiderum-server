@@ -6,6 +6,7 @@ import posts from './routers/posts.js'
 import auth from './routers/auth.js'
 import category from './routers/category.js'
 import search from './routers/search.js'
+import reply from './routers/reply.js'
 import comments from './routers/comments.js'
 import { connect } from './config/db.js'
 import {errorHandler} from './middlewares/errorHandler.js'
@@ -32,6 +33,7 @@ app.use('/api/v1/auth',auth )
 app.use('/api/v1/category', category)
 app.use('/api/v1/search/', search)
 app.use('/api/v1/comment/', comments)
+app.use('/api/v1/reply/', reply)
 app.set("view engine", "pug");
 app.get('/', (req, res) => {
   res.render('index', { title: "Home" })

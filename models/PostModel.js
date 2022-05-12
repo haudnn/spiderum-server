@@ -30,6 +30,13 @@ var schema = new mongoose.Schema({
             default:[],
         }
     ],   
+    unVote: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            default:[],
+        }
+    ],  
     attachment: String,
     author: {
         type: mongoose.Schema.Types.ObjectId,

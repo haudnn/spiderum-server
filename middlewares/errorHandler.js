@@ -1,6 +1,5 @@
 export const errorHandler = (err,req,res,next) => {
     err.statusCode =  err.statusCode || 500;
-
     // Dulication
     if(err.code === 11000){
         err.statusCode = 400;

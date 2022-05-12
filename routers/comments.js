@@ -1,10 +1,20 @@
 import express from 'express';
-import { getAllComments, createComment, deleteComment } from '../controllers/commentController.js'
+import {
+    getCommentsPost,
+    createComment,
+    deleteComment,
+    voteComment,
+    getAllComments,
+    voteComment2
+} from '../controllers/commentController.js'
 import {
     verifyToken,
 } from '../middlewares/verifyToken.js';
 const router = express.Router()
-router.get('/', getAllComments)
-router.post('/create',  verifyToken,createComment)
-router.post('/delete', verifyToken,deleteComment)
+router.get('/:id', getCommentsPost)
+router.get('/all', getAllComments)
+router.post('/create', verifyToken, createComment)
+router.post('/vote', verifyToken, voteComment)
+router.post('/delete', verifyToken, deleteComment)
+router.post('/vote2', verifyToken, voteComment2)
 export default router

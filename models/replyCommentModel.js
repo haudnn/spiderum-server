@@ -12,7 +12,7 @@ var schema = new mongoose.Schema({
             default:[],
         }
     ],
-    author: {
+    author:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
@@ -20,11 +20,11 @@ var schema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post'
     },
-    reply:{
+    parent_id:{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'replyComment'
+        ref: 'Comments'
     }
 }, {
     timestamps: true
 })
-export const CommentsModel = mongoose.model('Comments', schema)
+export const replyCommentModel = mongoose.model('replyComment', schema)

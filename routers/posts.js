@@ -25,5 +25,5 @@ router.get('/cate/:cateId', getPostsByCategory)
 router.post('/upload', upload.single('file'), uploadImage)
 router.post('/', verifyToken, createPost)
 router.get('/', getAllPosts)
-router.post('/vote/',verifyToken, votePost)
+router.post('/vote/', verifyToken, votePost)
 export default router
