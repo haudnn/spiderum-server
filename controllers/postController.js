@@ -7,10 +7,9 @@ import {
 import { v2 as cloudinary } from 'cloudinary'
 export const getAllPosts = async (req, res, next) => {
     try {
-        const posts = await PostModel.find()
+        const posts = await PostModel.find().sort({createdAt:-1})
         .populate('author','userName avatar displayName')
         .populate('category','name slug')
-        .select('title content description createdAt slug category attachment ') ; 
         res.status(200).json({
             status: 'OK',
             data: {
@@ -31,7 +30,6 @@ export const getPostsByCategory = async (req, res, next) => {
         })
         .populate('author','userName avatar displayName' )
         .populate('category','name slug')
-        .select('title description createdAt slug category attachment ') ; 
         res.status(200).json({
             status: 'OK',
             data: {
@@ -56,7 +54,6 @@ export const getPostsByUserName = async (req, res, next) => {
         })
         .populate('author','userName avatar')
         .populate('category','name')
-        .select('title description createdAt slug category attachment') ; 
         res.status(200).json({
             status: 'OK',
             data: {
@@ -96,6 +93,7 @@ export const createPost = async (req, res, next) => {
             status: 'OK',
             data:{
                 slug:post.slug,
+                id:post._id,
                 status: 'Bài viết được tạo thành công',
             }
         })
@@ -211,3 +209,22 @@ export const votePost = async (req, res, next) => {
     }
 };
 
+export const updateView = async (req, res, next) => {
+    const postId = req.body.postId
+    const prevViews = await PostModel.findById({_id:postId})
+    try {
+        const post = await PostModel.findByIdAndUpdate(postId, {
+            views :  prevViews.views + 1
+        }, {
+            new: true,
+            runValidator: true
+        })
+        res.status(200).json({
+            status: 'OK',
+            data: post
+        })
+    } catch (err) {
+        next(err)
+    }
+
+};

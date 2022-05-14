@@ -20,8 +20,8 @@ export const  getCommentsPost = async (req, res, next) => {
 export const  getAllComments = async (req, res, next) => {
     try {
         const comments = await CommentsModel.find()
-        .populate('author','userName avatar displayName')
-        .populate('post','_id')
+        // .populate('author','userName avatar displayName')
+        // .populate('post','_id')
         res.status(200).json({
             status: 'OK',
             data: {

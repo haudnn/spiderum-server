@@ -4,7 +4,6 @@ import {
     createComment,
     deleteComment,
     voteComment,
-    getAllComments,
     voteComment2
 } from '../controllers/commentController.js'
 import {
@@ -12,7 +11,6 @@ import {
 } from '../middlewares/verifyToken.js';
 const router = express.Router()
 router.get('/:id', getCommentsPost)
-router.get('/all', getAllComments)
 router.post('/create', verifyToken, createComment)
 router.post('/vote', verifyToken, voteComment)
 router.post('/delete', verifyToken, deleteComment)

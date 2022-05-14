@@ -8,7 +8,8 @@ import {
     getPost,
     getPostsByCategory,
     getPostsByUserName,
-    votePost
+    votePost,
+    updateView
 } from '../controllers/postController.js'
 import {
     verifyToken
@@ -26,4 +27,5 @@ router.post('/upload', upload.single('file'), uploadImage)
 router.post('/', verifyToken, createPost)
 router.get('/', getAllPosts)
 router.post('/vote/', verifyToken, votePost)
+router.post('/views', updateView)
 export default router

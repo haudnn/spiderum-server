@@ -8,6 +8,7 @@ import category from './routers/category.js'
 import search from './routers/search.js'
 import reply from './routers/reply.js'
 import comments from './routers/comments.js'
+import notifications from './routers/notifications.js'
 import { connect } from './config/db.js'
 import {errorHandler} from './middlewares/errorHandler.js'
 import multer from 'multer'
@@ -34,14 +35,16 @@ app.use('/api/v1/category', category)
 app.use('/api/v1/search/', search)
 app.use('/api/v1/comment/', comments)
 app.use('/api/v1/reply/', reply)
+app.use('/api/v1/notifications/', notifications)
 app.set("view engine", "pug");
 app.get('/', (req, res) => {
   res.render('index', { title: "Home" })
 })
-
 app.all('*',(req, res, next) => {
   const err = new Error ('404 NOT FOUND')
   err.statusCode = 404
   next(err)
 })
 app.use(errorHandler)
+//static folder
+

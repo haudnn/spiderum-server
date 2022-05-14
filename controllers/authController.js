@@ -1,10 +1,22 @@
 import {
     UserModel
 } from "../models/UserModel.js";
-import  Mailing from "../mails/emailSend.js";
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
-
+import nodemailer from 'nodemailer'
+let transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    service : 'Gmail',
+    auth: {
+      user: 'dnhau191@gmail.com',
+      pass: 'Hau1912001.',
+    }
+  });
+var otp = Math.random();
+otp = otp * 1000000;
+otp = parseInt(otp);
 export const register = async (req, res, next) => {
     // xác thực có token auth chưa cả login và register
     try {
@@ -351,23 +363,59 @@ export const authFacebook = async (req, res, next) => {
         });
     }
 };
-
 export const authMail = async (req, res, next) => {
+    const email = req.body.email;
     try {
-        Mailing.sendEmail(req.body.mail);
-        res.status(200).json({ message: 'email sent successfully' });
-      } catch (error) {
+        const user = await UserModel.find({
+            mail: email
+        })
+        if(user.length === 0){
+            var mailOptions = {
+                from:"dnhau191@gmail.com",
+                to: email,
+                subject: "OTP đăng ký tài khoản: ",
+                html: "<h3>Mã OTP để xác thực của bạn là: </h3>" + "<h1 style='font-weight:bold;'>" + otp + "</h1>" 
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    return console.log(error);
+                }
+                res.status(200).json({
+                    status: 'OK',
+                    data: `Mã OTP đã được gửi đến hòm thư ${email} của bạn`,
+                });
+            });
+        }
+        else {
+            res.status(200).json({
+                status: 'OK',
+                data: "Email này đã được đăng ký với một tài khoản khác!",
+            });
+        }
+    
+      } 
+    catch (error) {
         res.status(500).json({
             error: error,
         });
-      }
+    }
 };
 export const confirmEmail = async (req, res, next) => {
+    const getOTP= req.body.otp
     try {
-        res.status(200).json({
-            status: 'OK',
-            data: "Email của bạn đã được xác thực"
-        });
+        if (getOTP === otp){
+            const token = jwt.sign(otp, process.env.APP_SECRET)
+            res.status(200).json({
+                status: 'OK',
+                data: token
+            });
+        }
+        else{
+            res.status(200).json({
+                status: 'OK',
+                data: "Mã OTP bạn nhập không chính xác"
+            });
+        }
     } catch (error) {
         res.status(500).json({
             error: error,
