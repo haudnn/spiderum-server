@@ -13,7 +13,8 @@ import {
     updateUnFollower, 
     authFacebook,
     authMail,
-    confirmEmail
+    confirmEmail, 
+    userSavedPost
 } from '../controllers/authController.js'
 import {
     checkCurrentUser
@@ -28,6 +29,7 @@ router.post('/send/' ,authMail)
 router.post('/mail/' , confirmEmail)
 router.post('/login', login)
 router.put('/update/', verifyToken, updateUser)
+router.put('/save/', verifyToken, userSavedPost)
 router.put('/update/email', verifyToken, updateUserEmail)
 router.put('/update/follower/',verifyToken, updateFollower)
 router.put('/update/unfollower/',verifyToken, updateUnFollower)

@@ -62,6 +62,13 @@ const schema = new mongoose.Schema({
             default:[],
         }
     ],   
+    postSaved: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Post',
+            default:[],
+        }
+    ],
     isVerified: {
         type: Boolean,
         default: false,

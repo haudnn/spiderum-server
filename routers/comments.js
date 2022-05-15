@@ -4,7 +4,7 @@ import {
     createComment,
     deleteComment,
     voteComment,
-    voteComment2
+    voteComment2,
 } from '../controllers/commentController.js'
 import {
     verifyToken,

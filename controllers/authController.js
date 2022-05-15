@@ -18,7 +18,6 @@ var otp = Math.random();
 otp = otp * 1000000;
 otp = parseInt(otp);
 export const register = async (req, res, next) => {
-    // xác thực có token auth chưa cả login và register
     try {
         const user = await UserModel.create({
             ...req.body,
@@ -98,7 +97,7 @@ export const getCurrentUser = async (req, res, next) => {
             const user = await UserModel.findOne({
                     _id: req.user.userId
                 })
-                .populate('category', 'slug attachment name _id ');
+                .populate('category', 'slug attachment name _id ')
             data.user = user
         }
         res.status(200).json({
@@ -373,7 +372,7 @@ export const authMail = async (req, res, next) => {
             var mailOptions = {
                 from:"dnhau191@gmail.com",
                 to: email,
-                subject: "OTP đăng ký tài khoản: ",
+                subject: "Chào mừng bạn đến với Speirum | Mạng xã hội chia sẻ quan điểm ",
                 html: "<h3>Mã OTP để xác thực của bạn là: </h3>" + "<h1 style='font-weight:bold;'>" + otp + "</h1>" 
             };
             transporter.sendMail(mailOptions, (error, info) => {
@@ -411,8 +410,8 @@ export const confirmEmail = async (req, res, next) => {
             });
         }
         else{
-            res.status(200).json({
-                status: 'OK',
+            res.status(500).json({
+                status: 'ERR',
                 data: "Mã OTP bạn nhập không chính xác"
             });
         }
@@ -420,5 +419,47 @@ export const confirmEmail = async (req, res, next) => {
         res.status(500).json({
             error: error,
         });
+    }
+};
+export const userSavedPost = async (req, res, next) => {
+    try {
+        const {userId} = req.user
+        const postId = req.body.postId
+        const find =  await UserModel.find({
+            _id : { $in: userId },
+            postSaved : { $in: postId}
+        })
+        if(find.length === 0){
+            const data = await UserModel.findOneAndUpdate({_id:userId
+            }, { 
+                $push: {
+                    postSaved:postId
+                }
+            }, {
+                new: true
+            })
+            res.status(200).json({
+                status: 'success',
+                data: "Bài viết đã được lưu lại thành công",
+            })
+        }
+        else if (find.length !== 0){
+            const data = await UserModel.findOneAndUpdate({
+                _id:userId
+            }, {
+                $pull: {
+                    postSaved:postId
+                }
+            }, {
+                new: true
+            })
+            res.status(500).json({
+                status: 'OK',
+                data: "Bỏ lưu thành công",
+            })
+        }
+
+    } catch (err) {
+        next(err)
     }
 };

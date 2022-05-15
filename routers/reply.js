@@ -1,7 +1,8 @@
 import express from 'express';
 import {
     replyComment,
-    getReplyComment
+    getReplyComment,
+    voteReplyComment
 } from '../controllers/replyController.js'
 import {
     verifyToken,
@@ -9,4 +10,5 @@ import {
 const router = express.Router()
 router.post('/:id', verifyToken, replyComment)
 router.get('/:id', getReplyComment)
+router.post('/reply/vote', verifyToken, voteReplyComment)
 export default router

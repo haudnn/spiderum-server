@@ -11,7 +11,6 @@ export const search = async (req, res, next) =>{
         const posts = await PostModel.find({  $text: { $search: `"${req.query.q}"`  } })
         .populate('author','userName avatar displayName')
         .populate('category','name slug')
-        .select('title description createdAt slug attachment ') ; 
         const users = await UserModel.find({  $text: { $search: `"${req.query.q}"`  } })
         .select('userName avatar displayName') ; 
         res.status(200).json({

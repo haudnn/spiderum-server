@@ -8,7 +8,7 @@ import { v2 as cloudinary } from 'cloudinary'
 export const getAllPosts = async (req, res, next) => {
     try {
         const posts = await PostModel.find().sort({createdAt:-1})
-        .populate('author','userName avatar displayName')
+        .populate('author','userName avatar displayName postSaved')
         .populate('category','name slug')
         res.status(200).json({
             status: 'OK',
@@ -28,7 +28,7 @@ export const getPostsByCategory = async (req, res, next) => {
         const posts = await PostModel.find({
             category: cateId
         })
-        .populate('author','userName avatar displayName' )
+        .populate('author','userName avatar displayName postSaved' )
         .populate('category','name slug')
         res.status(200).json({
             status: 'OK',
@@ -52,7 +52,7 @@ export const getPostsByUserName = async (req, res, next) => {
         const posts = await PostModel.find({
             author: userId
         })
-        .populate('author','userName avatar')
+        .populate('author','userName avatar postSaved')
         .populate('category','name')
         res.status(200).json({
             status: 'OK',
@@ -157,7 +157,22 @@ export const uploadImage = async (req, res, next) => {
 export const getPost = async (req, res, next) => {
     try {
         const post = await PostModel.findOne({slug: req.params.slug })
-        .populate('author','userName displayName avatar intro')
+        .populate('author','userName displayName avatar intro postSaved')
+        .populate('category', 'name slug attachment')
+        res.status(200).json({
+            status: 'success',
+            post: post
+        })
+    }catch (error) {
+        res.json(error)
+    }
+};
+export const getPostUserSaved = async (req, res, next) => {
+    try {
+        const post = await PostModel.find({
+            _id : { $in: req.body.postId },
+        })
+        .populate('author','userName displayName avatar intro postSaved')
         .populate('category', 'name slug attachment')
         res.status(200).json({
             status: 'success',
@@ -227,4 +242,34 @@ export const updateView = async (req, res, next) => {
         next(err)
     }
 
+};
+
+
+export const getAllPostsCategoryUser = async (req, res, next) => {
+    try {
+        const {userId} = req.user
+        const find = await UserModel.findOne({_id:userId})
+        if(find.category.length > 0) {
+            const posts = await PostModel.find({
+                category : { $in: find.category },
+              }).sort({createdAt:-1})
+              .populate('author','userName avatar displayName postSaved ' )
+              .populate('category','name slug ')
+              res.status(200).json({
+                status: 'success',
+                data: posts
+                })
+        }
+        else if (find.category.length === 0 ){
+            const posts = await PostModel.find().sort({createdAt:-1})
+            .populate('author','userName avatar displayName postSaved')
+            .populate('category','name slug')
+            res.status(200).json({
+                status: 'success',
+                data: posts
+                })
+        }
+    }catch (error) {
+        res.json(error)
+    }
 };

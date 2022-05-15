@@ -37,3 +37,43 @@ export const  getReplyComment = async (req, res, next) => {
         });
     }
 };
+export const voteReplyComment = async (req, res, next) => {
+    try {
+        const {userId} = req.user
+        const find =  await replyCommentModel.find({
+            _id : { $in: req.body.replyId },
+            voteCount : { $in: userId }
+        })
+        if(find.length === 0){
+            const data = await replyCommentModel.findOneAndUpdate({_id:req.body.replyId
+            }, {
+                $push: {
+                    voteCount:userId
+                }
+            }, {
+                new: true
+            })
+            res.status(200).json({
+                status: 'success',
+                data: data,
+            })
+        }
+        else if (find.length !== 0){
+            const data = await replyCommentModel.findOneAndUpdate({
+                _id:req.body.replyId
+            }, {
+                $pull: {
+                    voteCount: userId
+                }
+            }, {
+                new: true
+            })
+            res.status(200).json({
+                status:'success',
+                data: data,
+            })
+        }
+    } catch (err) {
+        next(err)
+    }
+};

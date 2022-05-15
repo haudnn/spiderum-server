@@ -9,7 +9,9 @@ import {
     getPostsByCategory,
     getPostsByUserName,
     votePost,
-    updateView
+    updateView,
+    getPostUserSaved,
+    getAllPostsCategoryUser
 } from '../controllers/postController.js'
 import {
     verifyToken
@@ -28,4 +30,6 @@ router.post('/', verifyToken, createPost)
 router.get('/', getAllPosts)
 router.post('/vote/', verifyToken, votePost)
 router.post('/views', updateView)
+router.post('/saved/post', getPostUserSaved)
+router.get('/category/post', verifyToken,getAllPostsCategoryUser)
 export default router
