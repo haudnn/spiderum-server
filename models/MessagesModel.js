@@ -14,4 +14,4 @@ var schema = new mongoose.Schema({
 }, {
     timestamps: true
 })
-export const MessagesModel = mongoose.model('Messages', schema)
+export const MessagesModel = mongoose.model('Message', schema)

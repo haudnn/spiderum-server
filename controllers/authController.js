@@ -37,7 +37,6 @@ export const register = async (req, res, next) => {
         next(err)
     }
 };
-
 export const login = async (req, res, next) => {
     try {
         const user = await UserModel.findOne({
@@ -156,7 +155,6 @@ export const deleteCategoryUser = async (req, res, next) => {
         next(err)
     }
 };
-
 export const updateUser = async (req, res, next) => {
     try {
         const {
@@ -309,7 +307,6 @@ export const updateUnFollower = async (req, res, next) => {
         next(err)
     }
 };
-
 export const getUser = async (req, res, next) => {
     const {
         username

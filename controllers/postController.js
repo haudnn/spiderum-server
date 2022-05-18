@@ -88,15 +88,29 @@ export const createPost = async (req, res, next) => {
           const url = att.map((e) => { 
               return e.data.file.url
           })
-        const post = await PostModel.create({...req.body, author: userId,voteCount:userId,attachment:url.toString()})
-        res.status(200).json({
-            status: 'OK',
-            data:{
-                slug:post.slug,
-                id:post._id,
-                status: 'Bài viết được tạo thành công',
-            }
-        })
+        if(url.length !== 0){
+            const post = await PostModel.create({...req.body, author: userId,voteCount:userId,attachment:url[0].toString()})
+            res.status(200).json({
+                status: 'OK',
+                data:{
+                    slug:post.slug,
+                    id:post._id,
+                    status: 'Bài viết được tạo thành công',
+                }
+            })
+        }
+        else if(url.length === 0) {
+            const post = await PostModel.create({...req.body, author: userId,voteCount:userId})
+            res.status(200).json({
+                status: 'OK',
+                data:{
+                    slug:post.slug,
+                    id:post._id,
+                    status: 'Bài viết được tạo thành công',
+                }
+            })
+        }
+
     } catch (err) {
         res.status(500).json({
             err:"Có lỗi khi tạo bài viết"

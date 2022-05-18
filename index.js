@@ -9,6 +9,8 @@ import search from './routers/search.js'
 import reply from './routers/reply.js'
 import comments from './routers/comments.js'
 import notifications from './routers/notifications.js'
+import messages from './routers/message.js'
+import conversation from './routers/conversation.js'
 import { connect } from './config/db.js'
 import {errorHandler} from './middlewares/errorHandler.js'
 import multer from 'multer'
@@ -35,6 +37,8 @@ app.use('/api/v1/category', category)
 app.use('/api/v1/search/', search)
 app.use('/api/v1/comment/', comments)
 app.use('/api/v1/reply/', reply)
+app.use('/api/v1/messages/', messages)
+app.use('/api/v1/conversation/', conversation)
 app.use('/api/v1/notifications/', notifications)
 app.set("view engine", "pug");
 app.get('/', (req, res) => {
