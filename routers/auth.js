@@ -14,7 +14,8 @@ import {
     authFacebook,
     authMail,
     confirmEmail, 
-    userSavedPost
+    userSavedPost,
+    getUserById
 } from '../controllers/authController.js'
 import {
     checkCurrentUser
@@ -37,5 +38,6 @@ router.put('/password/', verifyToken, updatePassword)
 router.put('/create/category/', verifyToken, createCategoryUser)
 router.put('/delete/category/', verifyToken, deleteCategoryUser)
 router.get('/:username', getUser)
+router.get('/user/:id', getUserById)
 router.get('/', checkCurrentUser, getCurrentUser)
 export default router

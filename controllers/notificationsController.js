@@ -7,29 +7,46 @@ import {
 export const createPostNotifications = async (req, res, next) => {
     const {userId} = req.user
     const postId = req.body.postId
-    try {
-        const find = await UserModel.find({_id: userId})
-        .select("followers")
-        const getUser = find.map((e)=>{
-            return e.followers
-        })
-        const notification = getUser.flat().forEach(async (item) => await NotificationModel.create({user: item,parentId: userId,post:postId}))
-        res.status(200).json({
-            status: 'OK',
-            data: notification
-        });
-    } catch (err) {
-        res.status(500).json({ 
-            error: err,
-        });
+    const user = req.body.user
+    if(postId) {
+        try {
+            const find = await UserModel.find({_id: userId})
+            .select("followers")
+            const getUser = find.map((e)=>{
+                return e.followers
+            })
+            const notification = getUser.flat().forEach(async (item) => await NotificationModel.create({user: item,parentId: userId,post:postId}))
+            res.status(200).json({
+                status: 'OK',
+                data: notification
+            });
+        } catch (err) {
+            res.status(500).json({ 
+                error: err,
+            });
+        }
     }
+    else if (!postId &&  user) {
+        try {
+            const notification = await NotificationModel.create({user: user,parentId: userId})
+            res.status(200).json({
+                status: 'OK',
+                data: notification
+            });
+        } catch (err) {
+            res.status(500).json({ 
+                error: err,
+            });
+        }
+    }
+
 };
 export const getPostNotifications= async (req, res, next) => {
     const {userId} = req.user
     try {
         const notification = await  NotificationModel.find({user:userId}).sort({createdAt:-1})
-        .populate('post','title description slug attachment')
         .populate('parentId' , 'userName displayName avatar')
+        .populate('post','title description slug attachment')
         res.status(200).json({
             status: 'success',
             data: notification

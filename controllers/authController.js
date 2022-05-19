@@ -1,6 +1,7 @@
 import {
     UserModel
 } from "../models/UserModel.js";
+import { NotificationModel } from "../models/NotificationModel.js";
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import nodemailer from 'nodemailer'
@@ -263,9 +264,10 @@ export const updateFollower = async (req, res, next) => {
         }, {
             new: true
         })
+        await NotificationModel.create({user: targetUser,parentId: userId})
         res.status(200).json({
             status: 'OK',
-            data: data,
+            data: data
         })
     } catch (err) {
         next(err)
@@ -317,6 +319,26 @@ export const getUser = async (req, res, next) => {
     try {
         const user = await UserModel.findOne({
             userName: username
+        })
+        data.user = user
+        res.status(200).json({
+            status: 'OK',
+            data: data
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err,
+        });
+    }
+};
+export const   getUserById = async (req, res, next) => {
+    const userId = req.params.id
+    const data = {
+        user: null
+    }
+    try {
+        const user = await UserModel.findOne({
+            _id:  userId
         })
         data.user = user
         res.status(200).json({
