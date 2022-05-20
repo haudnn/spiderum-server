@@ -2,23 +2,25 @@ import { ConversationModel } from "../models/ConversationModel.js";
 export const  newConversation = async (req, res, next) =>{
     const {userId} = req.user
     const recei = req.body.receiverId
-    const find= await ConversationModel.find({
-        members : {$all: [userId, recei]},
-    })
-    console.log(find)
-    if(find.length === 0) {
-        try {
-            const conversation= await ConversationModel.create({members: [userId, req.body.receiverId]})
-            res.status(200).json({
-                status: 'OK',
-                data: conversation
-            });
-        } catch (err) {
-            res.status(500).json({
-                error: err,
-            });
+    if(recei) { 
+        const find= await ConversationModel.find({
+            members : {$all: [userId, recei]},
+        })
+        if(find.length === 0) {
+            try {
+                const conversation= await ConversationModel.create({members: [userId, req.body.receiverId]})
+                res.status(200).json({
+                    status: 'OK',
+                    data: conversation
+                });
+            } catch (err) {
+                res.status(500).json({
+                    error: err,
+                });
+            }
         }
     }
+
 };
 export const  getConversation = async (req, res, next) =>{
     try {
