@@ -11,6 +11,7 @@ import comments from './routers/comments.js'
 import notifications from './routers/notifications.js'
 import messages from './routers/message.js'
 import conversation from './routers/conversation.js'
+import notiMessage from './routers/notiMessage.js'
 import { connect } from './config/db.js'
 import {errorHandler} from './middlewares/errorHandler.js'
 import multer from 'multer'
@@ -40,6 +41,7 @@ app.use('/api/v1/reply/', reply)
 app.use('/api/v1/messages/', messages)
 app.use('/api/v1/conversation/', conversation)
 app.use('/api/v1/notifications/', notifications)
+app.use('/api/v1/notimes/', notiMessage)
 app.set("view engine", "pug");
 app.get('/', (req, res) => {
   res.render('index', { title: "Home" })
