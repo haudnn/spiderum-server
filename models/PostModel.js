@@ -19,7 +19,7 @@ var schema = new mongoose.Schema({
         type: 'string'
     },
     slug: { type: String, slug: 'title', unique: true },
-    voteCount: [
+    vote: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',

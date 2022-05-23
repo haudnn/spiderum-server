@@ -11,7 +11,7 @@ import {
     votePost,
     updateView,
     getPostUserSaved,
-    getAllPostsCategoryUser
+    getAllPostsCategoryUser,
 } from '../controllers/postController.js'
 import {
     verifyToken

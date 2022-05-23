@@ -89,7 +89,7 @@ export const createPost = async (req, res, next) => {
               return e.data.file.url
           })
         if(url.length !== 0){
-            const post = await PostModel.create({...req.body, author: userId,voteCount:userId,attachment:url[0].toString()})
+            const post = await PostModel.create({...req.body, author: userId,vote:userId,attachment:url[0].toString()})
             res.status(200).json({
                 status: 'OK',
                 data:{
@@ -100,7 +100,7 @@ export const createPost = async (req, res, next) => {
             })
         }
         else if(url.length === 0) {
-            const post = await PostModel.create({...req.body, author: userId,voteCount:userId})
+            const post = await PostModel.create({...req.body, author: userId,vote:userId})
             res.status(200).json({
                 status: 'OK',
                 data:{
@@ -175,7 +175,8 @@ export const getPost = async (req, res, next) => {
         .populate('category', 'name slug attachment')
         res.status(200).json({
             status: 'success',
-            post: post
+            post: post,
+            points: post.vote.length - post.unVote.length,
         })
     }catch (error) {
         res.json(error)
@@ -196,48 +197,6 @@ export const getPostUserSaved = async (req, res, next) => {
         res.json(error)
     }
 };
-export const votePost = async (req, res, next) => {
-    try {
-        const {userId} = req.user
-        const find =  await PostModel.find({
-            _id : { $in: req.body.postId },
-            voteCount : { $in: userId }
-        })
-        if(find.length === 0){
-            const data = await PostModel.findOneAndUpdate({_id:req.body.postId
-            }, {
-                $push: {
-                    voteCount:userId
-                }
-            }, {
-                new: true
-            })
-            res.status(200).json({
-                status: '1',
-                data: data,
-            })
-        }
-        else if (find.length !== 0){
-            const data = await PostModel.findOneAndUpdate({
-                _id:req.body.postId
-            }, {
-                $pull: {
-                    voteCount: userId
-                }
-            }, {
-                new: true
-            })
-            res.status(200).json({
-                status: 'OK',
-                data: data,
-            })
-        }
-
-    } catch (err) {
-        next(err)
-    }
-};
-
 export const updateView = async (req, res, next) => {
     const postId = req.body.postId
     const prevViews = await PostModel.findById({_id:postId})
@@ -287,3 +246,152 @@ export const getAllPostsCategoryUser = async (req, res, next) => {
         res.json(error)
     }
 };
+export const votePost = async (req, res, next) => {
+    const {userId} = req.user
+    const findPost = await PostModel.findOne({_id :req.body.postId })
+    // 1 vote
+    if(req.body.action === '1') {
+        try {   
+            const find =  await PostModel.find({
+                _id : { $in: req.body.postId },
+                vote : { $in: userId }
+            })
+            if(find.length === 0){
+                const data = await PostModel.findOneAndUpdate({_id:req.body.postId
+                }, {
+                    $push: {
+                        vote:userId
+                    },
+                    $pull: {
+                        unVote:userId
+                    }
+                }, {
+                        new: true
+                })
+                res.status(200).json({
+                    status: 'success',
+                    points: data.vote.length - data.unVote.length,
+                })
+            }
+            else if (find.length !== 0){
+                const data = await PostModel.findOneAndUpdate({
+                    _id:req.body.postId
+                }, {
+                    $pull: {
+                        vote: userId
+                    }
+                }, {
+                    new: true
+                })
+                res.status(200).json({
+                    status: 'OK',
+                    points: data.vote.length - data.unVote.length,
+                })
+            }
+    
+        } catch (err) {
+            next(err)
+        }
+    }
+    // 2 unvote
+    else if ( req.body.action === '2') {
+        try {   
+            const find =  await PostModel.find({
+                _id : { $in: req.body.postId },
+                vote : { $in: userId }
+            })
+            if(find.length === 0){
+                try {   
+                    const findUnVote =  await PostModel.find({
+                        _id : { $in: req.body.postId },
+                        unVote : { $in: userId }
+                    })
+                    if(findUnVote.length === 0){
+                        const data = await PostModel.findOneAndUpdate({_id:req.body.postId
+                        }, {
+                            $push: {
+                                unVote:userId
+                            },           
+                        }, {
+                                new: true
+                        })
+                        res.status(200).json({
+                            status: 'success',
+                            points: data.vote.length - data.unVote.length,
+                        })
+                    }
+                    else if (findUnVote.length !== 0){
+                        const data = await PostModel.findOneAndUpdate({
+                            _id:req.body.postId
+                        }, {
+                            $pull: {
+                                unVote: userId
+                            }
+                        }, {
+                            new: true
+                        })
+                        res.status(200).json({
+                            status: 'OK',
+                            points: data.vote.length - data.unVote.length,
+                        })
+                    }
+            
+                } catch (err) {
+                    next(err)
+                }
+            }
+            else if (find.length !== 0){
+                await PostModel.findOneAndUpdate({_id:req.body.postId
+                }, {
+                    $pull: {
+                        vote: userId
+                    }                        
+                }, {
+                        new: true
+                })
+                try {   
+                    const findUnVote =  await PostModel.find({
+                        _id : { $in: req.body.postId },
+                        unVote : { $in: userId }
+                    })
+                    if(findUnVote.length === 0){
+                        const data = await PostModel.findOneAndUpdate({_id:req.body.postId
+                        }, {
+                            $push: {
+                                unVote:userId
+                            },                     
+                        }, {
+                                new: true
+                        })
+                        res.status(200).json({
+                            status: 'success',
+                            points: data.vote.length - data.unVote.length,
+                        })
+                    }
+                    else if (findUnVote.length !== 0){
+                        const data = await PostModel.findOneAndUpdate({
+                            _id:req.body.postId
+                        }, {
+                            $pull: {
+                                vote: userId
+                            },
+                        }, {
+                            new: true
+                        })
+                        res.status(200).json({
+                            status: 'OK',
+                            points: data.vote.length - data.unVote.length,
+                        })
+                    }
+            
+                } catch (err) {
+                    next(err)
+                }
+            }
+    
+        } catch (err) {
+            next(err)
+        }
+    }
+};
+
