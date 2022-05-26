@@ -45,6 +45,10 @@ var schema = new mongoose.Schema({
     category:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Category'
+    },
+    comment_count: { 
+        type: Number,
+        default:0
     }
 }, {
     timestamps: true

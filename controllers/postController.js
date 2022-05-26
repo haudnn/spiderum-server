@@ -216,8 +216,6 @@ export const updateView = async (req, res, next) => {
     }
 
 };
-
-
 export const getAllPostsCategoryUser = async (req, res, next) => {
     try {
         const {userId} = req.user

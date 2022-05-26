@@ -1,4 +1,5 @@
 import { CommentsModel } from "../models/CommentsModel.js";
+import { PostModel } from "../models/PostModel.js";
 export const  getCommentsPost = async (req, res, next) => {
     const postId = req.params.id
     try {
@@ -20,8 +21,6 @@ export const  getCommentsPost = async (req, res, next) => {
 export const  getAllComments = async (req, res, next) => {
     try {
         const comments = await CommentsModel.find()
-        // .populate('author','userName avatar displayName')
-        // .populate('post','_id')
         res.status(200).json({
             status: 'OK',
             data: {
@@ -39,6 +38,8 @@ export const createComment = async (req, res, next) => {
     const postId = req.body.postId
     try {
         const comment = await CommentsModel.create({...req.body, author: userId,post:postId, voteCount:userId})
+        const findPost = await PostModel.findOne({_id: postId})
+        await PostModel.findOneAndUpdate({_id: postId}, {comment_count: findPost.comment_count + 1})
         res.status(200).json({
             status: 'OK',
             data:{

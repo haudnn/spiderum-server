@@ -1,12 +1,15 @@
 import {
     replyCommentModel,
 } from "../models/replyCommentModel.js";
+import { PostModel } from "../models/PostModel.js";
 export const replyComment = async (req, res, next) => {
     const commentId = req.params.id
     const postId = req.body.postId
     const {userId} = req.user
     try {
-        const reply = await replyCommentModel.create({...req.body, author: userId,post:postId, voteCount:userId , parent_id: commentId})
+        const reply = await replyCommentModel.create({content: req.body.reply.content, author: userId,post:postId, voteCount:userId , parent_id: commentId})
+        const findPost = await PostModel.findOne({_id: postId})
+        await PostModel.findOneAndUpdate({_id: postId}, {comment_count: findPost.comment_count + 1})
         res.status(200).json({
             status: 'OK',
             data: {
