@@ -62,6 +62,11 @@
 
 ![image](https://user-images.githubusercontent.com/90059594/169771255-e131e051-5bae-4184-82b6-9812a30f17ab.png)
 
+
+## **Video Demo 📝**
+
+https://www.youtube.com/watch?v=ZlklfMF1g0g&t=6s&ab_channel=14mH4u
+
 ## **Install 🔨**
 
 1. Clone Project
